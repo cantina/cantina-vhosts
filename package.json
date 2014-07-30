@@ -1,0 +1,37 @@
+{
+  "name": "cantina-vhosts",
+  "description": "Support for multi-site cantina apps.",
+  "version": "4.1.0",
+  "publishConfig": {
+    "registry": "https://npm-registry.terraeclipse.com"
+  },
+  "main": "cantina-vhosts.js",
+  "dependencies": {
+    "lodash": "^2.4.1",
+    "regexp-quote": "0.0.0"
+  },
+  "peerDependencies": {
+    "cantina": "~4.1.1",
+    "cantina-web": "~4.1.3"
+  },
+  "devDependencies": {
+    "mocha": "~1.12.0",
+    "cantina": "~4.1.1",
+    "cantina-web": "~4.1.3"
+  },
+  "scripts": {
+    "test": "make test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/cantina/cantina-vhosts.git"
+  },
+  "homepage": "https://github.com/cantina/cantina-vhosts",
+  "keywords": [
+    "cantina",
+    "vhosts"
+  ],
+  "bugs": {
+    "url": "https://github.com/cantina/cantina-vhosts/issues"
+  }
+}
