@@ -1,7 +1,7 @@
 {
   "name": "cantina-vhosts",
   "description": "Support for multi-site cantina apps.",
-  "version": "4.1.0",
+  "version": "4.1.1",
   "publishConfig": {
     "registry": "https://npm-registry.terraeclipse.com"
   },
