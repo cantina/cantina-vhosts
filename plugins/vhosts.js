@@ -1,7 +1,11 @@
 var fs = require('fs')
   , path = require('path')
+  , inherits = require('util').inherits
   , _ = require('lodash')
-  , escapeRegex = require('regexp-quote');
+  , escapeRegex = require('regexp-quote')
+  , Cantina = require('cantina')
+  , etc = require('etc')
+  , etcYaml = require('etc-yaml');
 
 module.exports = function (app) {
   var conf = app.conf.get('vhosts');
@@ -12,20 +16,35 @@ module.exports = function (app) {
   // API namespace.
   app.vhosts = {};
 
+  // Vhost class.
+  function Vhost (options) {
+    Cantina.call(this, options);
+  }
+  inherits(Vhost, Cantina);
+
+  // Custom boot method.
+  Vhost.prototype.boot = function (root, cb) {
+    var vhost = this;
+
+    vhost.root = root;
+    vhost.parent = app;
+    vhost.conf = etc()
+      .use(etcYaml)
+      .argv()
+      .env()
+      .folder(path.join(vhost.root, 'etc'));
+
+    process.nextTick(cb);
+  };
+
   // Create a new vhost.
   app.vhosts.create = function (root, defaults) {
-    var vhost = require('cantina').createApp();
+    var vhost = new Vhost();
 
     // On app start, boot the vhost, loading ./etc conf and setting the root.
     app.hook('start').add(function (next) {
       vhost.boot(root, function (err) {
         if (err) return next(err);
-
-        // Override root.
-        vhost.root = root;
-
-        // Add vhost /etc.
-        vhost.conf.folder(path.join(vhost.root, 'etc'));
 
         // Add default conf.
         vhost.conf.add(defaults || {});
