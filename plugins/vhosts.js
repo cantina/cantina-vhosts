@@ -118,7 +118,7 @@ module.exports = function (app) {
 
     // Match against path?
     if (config.match === 'pathname') {
-      regex = new RegExp('^\\/' + escapeRegex(config.subdomain || name));
+      regex = new RegExp('^\\/' + escapeRegex(config.pathname || name));
       if (regex.test(req.href.pathname)) {
         return true;
       }
