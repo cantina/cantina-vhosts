@@ -89,8 +89,8 @@ module.exports = function (app) {
 
   // Check if a vhost matches a request.
   app.vhosts.match = function (vhost, req) {
-    var name = vhost.conf.get('vhost:name')
-      , config = _.extend({}, conf, vhost.conf.get('vhost') || {})
+    var config = _.extend({}, conf, vhost.conf.get('vhost') || {})
+      , name = config.name
       , regex;
 
     // Match against full hostname?
@@ -112,6 +112,14 @@ module.exports = function (app) {
     if (config.match === 'subdomain') {
       regex = new RegExp('^' + escapeRegex(config.subdomain || name) + '\\.');
       if (regex.test(req.href.hostname)) {
+        return true;
+      }
+    }
+
+    // Match against path?
+    if (config.match === 'pathname') {
+      regex = new RegExp('^\\/' + escapeRegex(config.subdomain || name));
+      if (regex.test(req.href.pathname)) {
         return true;
       }
     }
