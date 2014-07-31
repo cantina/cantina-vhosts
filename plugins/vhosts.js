@@ -56,7 +56,7 @@ module.exports = function (app) {
         vhost.require('cantina-web');
 
         // Load web stuff.
-        vhost.load('web');
+        vhost.load('web', {parent: root});
 
         // Load the (optional) vhost index file.
         if (fs.existsSync(path.resolve(vhost.root, 'index.js'))) {
