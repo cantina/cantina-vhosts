@@ -1,7 +1,7 @@
 {
   "name": "cantina-vhosts",
   "description": "Support for multi-site cantina apps.",
-  "version": "4.1.4",
+  "version": "4.1.5",
   "main": "cantina-vhosts.js",
   "dependencies": {
     "etc": "^0.4.0",
