@@ -6,7 +6,6 @@
   "dependencies": {
     "etc": "^0.4.0",
     "etc-yaml": "0.0.5",
-    "href": "^0.1.1",
     "lodash": "^2.4.1",
     "regexp-quote": "0.0.0"
   },

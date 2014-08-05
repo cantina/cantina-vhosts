@@ -5,8 +5,7 @@ var fs = require('fs')
   , escapeRegex = require('regexp-quote')
   , Cantina = require('cantina')
   , etc = require('etc')
-  , etcYaml = require('etc-yaml')
-  , href = require('href');
+  , etcYaml = require('etc-yaml');
 
 module.exports = function (app) {
   var conf = app.conf.get('vhosts');
