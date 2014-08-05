@@ -1,6 +1,6 @@
-module.exports = function (app) {
-  app.middleware.add(function veggieMiddleware (req, res, next) {
-    res.write('Veggie: ' + app.conf.get('vhost:name'));
-    res.end();
+module.exports = function (vhost) {
+  vhost.middleware.add(function veggieMiddleware (req, res, next) {
+    res.render('index', {text: 'Veggie: ' + vhost.conf.get('vhost:name')});
   });
+  vhost.load('web');
 };

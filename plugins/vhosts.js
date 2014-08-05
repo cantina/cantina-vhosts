@@ -5,7 +5,8 @@ var fs = require('fs')
   , escapeRegex = require('regexp-quote')
   , Cantina = require('cantina')
   , etc = require('etc')
-  , etcYaml = require('etc-yaml');
+  , etcYaml = require('etc-yaml')
+  , href = require('href');
 
 module.exports = function (app) {
   var conf = app.conf.get('vhosts');
@@ -55,9 +56,6 @@ module.exports = function (app) {
         // Dependencies.
         vhost.require('cantina-web');
 
-        // Load web stuff.
-        vhost.load('web', {parent: root});
-
         // Load the (optional) vhost index file.
         if (fs.existsSync(path.resolve(vhost.root, 'index.js'))) {
           vhost.require(vhost.root + '/index.js');
@@ -69,6 +67,15 @@ module.exports = function (app) {
         if (name && fs.existsSync(path.resolve(vhost.root, name + '.js'))) {
           vhost.require(vhost.root + '/' + name + '.js');
         }
+
+        // Load web stuff.
+        vhost.load('web', {parent: vhost.root});
+
+        // Add vhost req-prep middleware.
+        vhost.middleware.first(-9000, function vhostReqPrepMiddleware (req, res, next) {
+          app.vhosts.rewrite(vhost, req);
+          next();
+        });
 
         // Start the vhost.
         vhost.start(next);
@@ -141,6 +148,14 @@ module.exports = function (app) {
       if (regex.test(req.href.pathname)) {
         return true;
       }
+    }
+  };
+
+  // Rewrite URL for vhost middleware stack.
+  app.vhosts.rewrite = function (vhost, req) {
+    var config = _.extend({}, conf, vhost.conf.get('vhost') || {});
+    if (config.match === 'pathname') {
+      req.url = req.url.replace(new RegExp('^\\/' + config.name), '');
     }
   };
 

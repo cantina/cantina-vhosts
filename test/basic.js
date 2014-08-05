@@ -30,7 +30,34 @@ describe('basic test', function () {
     request('http://localhost:3000/apple', function (err, res, body) {
       assert.ifError(err);
       assert.equal(res.statusCode, 200);
-      assert.equal(res.body, 'Fruit: apple');
+      assert.equal(res.body, '<strong><small>Fruit: apple</small></strong>');
+      done();
+    });
+  });
+
+  it('GET /apple/name.txt should hit the apple vhost', function (done) {
+    request('http://localhost:3000/apple/name.txt', function (err, res, body) {
+      assert.ifError(err);
+      assert.equal(res.statusCode, 200);
+      assert.equal(res.body, 'Fruit');
+      done();
+    });
+  });
+
+  it('GET /banana should hit the banana vhost', function (done) {
+    request('http://localhost:3000/banana', function (err, res, body) {
+      assert.ifError(err);
+      assert.equal(res.statusCode, 200);
+      assert.equal(res.body, '<strong>Fruit: banana</strong>');
+      done();
+    });
+  });
+
+  it('GET /banana/name.txt should hit the banana vhost', function (done) {
+    request('http://localhost:3000/banana/name.txt', function (err, res, body) {
+      assert.ifError(err);
+      assert.equal(res.statusCode, 200);
+      assert.equal(res.body, 'banana');
       done();
     });
   });
@@ -39,7 +66,16 @@ describe('basic test', function () {
     request('http://localhost:3000/carrot', function (err, res, body) {
       assert.ifError(err);
       assert.equal(res.statusCode, 200);
-      assert.equal(res.body, 'Veggie: carrot');
+      assert.equal(res.body, '<h1>Veggie: carrot</h1>');
+      done();
+    });
+  });
+
+  it('GET /carrot/name.txt should hit the carrot vhost', function (done) {
+    request('http://localhost:3000/carrot/name.txt', function (err, res, body) {
+      assert.ifError(err);
+      assert.equal(res.statusCode, 200);
+      assert.equal(res.body, 'food');
       done();
     });
   });
