@@ -56,16 +56,20 @@ module.exports = function (app) {
         vhost.require('cantina-web');
 
         // Load the (optional) vhost index file.
+        var main;
         if (fs.existsSync(path.resolve(vhost.root, 'index.js'))) {
-          vhost.require(vhost.root + '/index.js');
+          main = vhost.require(vhost.root + '/index.js');
         }
         if (fs.existsSync(path.resolve(vhost.root, 'vhost.js'))) {
-          vhost.require(vhost.root + '/vhost.js');
+          main = vhost.require(vhost.root + '/vhost.js');
         }
         var name = vhost.conf.get('vhost:name');
         if (name && fs.existsSync(path.resolve(vhost.root, name + '.js'))) {
-          vhost.require(vhost.root + '/' + name + '.js');
+          main = vhost.require(vhost.root + '/' + name + '.js');
         }
+
+        // Set weight.
+        vhost.weight = (main && main.weight) ? main.weight : 0;
 
         // Load web stuff.
         vhost.load('web', {parent: vhost.root});
@@ -100,15 +104,23 @@ module.exports = function (app) {
   app.vhosts.find = function (req) {
     var keys = Object.keys(app._vhosts)
       , key
-      , vhost;
+      , matches = [];
 
     // Loop over vhosts and look for matches.
     for (var i = 0; i < keys.length; i++) {
       key = keys[i];
       vhost = app._vhosts[key];
       if (app.vhosts.match(vhost, req)) {
-        return vhost;
+        matches.push(vhost);
       }
+    }
+
+    // Return the highest-weight match.
+    if (matches.length) {
+      matches.sort(function (a, b) {
+        return a.weight - b.weight;
+      });
+      return matches[0];
     }
   };
 
@@ -117,6 +129,13 @@ module.exports = function (app) {
     var config = _.extend({}, conf, vhost.conf.get('vhost') || {})
       , name = config.name
       , regex;
+
+    // Custom match?
+    if (typeof vhost.match === 'function') {
+      if (vhost.match(req)) {
+        return true;
+      }
+    }
 
     // Match against full hostname?
     if (config.match == 'hostname') {
