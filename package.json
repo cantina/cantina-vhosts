@@ -10,12 +10,12 @@
     "regexp-quote": "0.0.0"
   },
   "peerDependencies": {
-    "cantina": "~4.1.1",
-    "cantina-web": "~4.1.3"
+    "cantina": "^4.1.1",
+    "cantina-web": "^4.1.3"
   },
   "devDependencies": {
-    "cantina": "~4.1.1",
-    "cantina-web": "~4.1.3",
+    "cantina": "^4.1.1",
+    "cantina-web": "^4.1.3",
     "mocha": "~1.12.0",
     "request": "^2.39.0"
   },
