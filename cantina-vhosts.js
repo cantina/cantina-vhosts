@@ -3,6 +3,7 @@ module.exports = function (app) {
   app.conf.add({
     vhosts: {
       match: 'hostname',
+      middleware: true,
       notFound: true
     }
   });
@@ -12,5 +13,7 @@ module.exports = function (app) {
 
   // Load stuff.
   app.load('plugins');
-  app.load('middleware');
+  if (app.conf.get('vhosts:middleware')) {
+    app.load('middleware');
+  }
 };
