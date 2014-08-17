@@ -28,6 +28,7 @@ module.exports = function (app) {
 
     vhost.root = root;
     vhost.parent = app;
+    vhost.top = app.top || app.parent || app;
     vhost.conf = etc()
       .use(etcYaml)
       .argv()
