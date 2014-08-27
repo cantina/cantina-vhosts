@@ -4,8 +4,8 @@
   "version": "4.1.9",
   "main": "cantina-vhosts.js",
   "dependencies": {
-    "etc": "^0.4.0",
-    "etc-yaml": "0.0.5",
+    "etc": "^0.5.0",
+    "etc-yaml": "^0.0.5",
     "lodash": "^2.4.1",
     "regexp-quote": "0.0.0"
   },
