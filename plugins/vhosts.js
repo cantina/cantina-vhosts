@@ -138,6 +138,13 @@ module.exports = function (app) {
       }
     }
 
+    // Match against full host?
+    if (config.match == 'host') {
+      if (req.href.host === (config.host || name)) {
+        return true;
+      }
+    }
+
     // Match against full hostname?
     if (config.match == 'hostname') {
       if (req.href.hostname === (config.hostname || name)) {
