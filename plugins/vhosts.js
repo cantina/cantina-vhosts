@@ -10,8 +10,9 @@ var fs = require('fs')
 module.exports = function (app) {
   var conf = app.conf.get('vhosts');
 
-  // Cache of instantiated vhosts.
+  // Cache of instantiated vhosts and mixins.
   app._vhosts = {};
+  app._vhosts_mixins = {};
 
   // API namespace.
   app.vhosts = {};
@@ -38,6 +39,31 @@ module.exports = function (app) {
     process.nextTick(cb);
   };
 
+  // Apply a vhost mixin.
+  Vhost.prototype.mixin = function (name) {
+    var vhost = this
+      , root = app._vhosts_mixins[name];
+
+    if (!root) throw new Error('Could not find vhost mixin "' + name + '"');
+
+    // Load conf.
+    vhost.load('conf', {parent: root});
+
+    // Load the (optional) vhost index file.
+    if (fs.existsSync(path.resolve(root, 'index.js'))) {
+      vhost.require(root + '/index.js');
+    }
+    if (fs.existsSync(path.resolve(root, 'vhost.js'))) {
+      vhost.require(root + '/vhost.js');
+    }
+    if (fs.existsSync(path.resolve(root, name + '.js'))) {
+      vhost.require(root + '/' + name + '.js');
+    }
+
+    // Load web stuff.
+    vhost.load('web', {parent: root});
+  };
+
   // Create a new vhost.
   app.vhosts.create = function (root, defaults) {
     var vhost = new Vhost();
@@ -55,6 +81,11 @@ module.exports = function (app) {
 
         // Dependencies.
         vhost.require('cantina-web');
+
+        // Load the _common mixin, if it exists.
+        if (app._vhosts_mixins['_common']) {
+          vhost.mixin('_common');
+        }
 
         // Load the (optional) vhost index file.
         var main;
@@ -194,7 +225,13 @@ module.exports = function (app) {
         if (fs.statSync(root).isDirectory()) {
           // We don't override existing vhosts.
           if (!app._vhosts[name]) {
-            app._vhosts[name] = app.vhosts.create(root, {vhost: {name: name}});
+            // Underscore-prefixed vhosts are considere mixins.
+            if (name.match(/^_/) && !app._vhosts_mixins[name]) {
+              app._vhosts_mixins[name] = root;
+            }
+            else {
+              app._vhosts[name] = app.vhosts.create(root, {vhost: {name: name}});
+            }
           }
         }
       });

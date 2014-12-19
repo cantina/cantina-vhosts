@@ -80,4 +80,22 @@ describe('basic test', function () {
     });
   });
 
+  it('GET /common should hit the common vhost', function (done) {
+    request('http://localhost:3000/apple/common', function (err, res, body) {
+      assert.ifError(err);
+      assert.equal(res.statusCode, 200);
+      assert.equal(res.body, 'Common Loaded');
+      done();
+    });
+  });
+
+  it('GET /common.txt should hit the common vhost', function (done) {
+    request('http://localhost:3000/banana/common.txt', function (err, res, body) {
+      assert.ifError(err);
+      assert.equal(res.statusCode, 200);
+      assert.equal(res.body, 'Loaded');
+      done();
+    });
+  });
+
 });
