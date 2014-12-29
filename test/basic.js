@@ -1,13 +1,15 @@
 describe('basic test', function () {
-  var proc;
+  var proc
+    , port = 9090
+    , baseUrl = 'http://localhost:' + port;
 
   before(function (done) {
-    proc = spawn('node', ['example.js', '--vhosts:match=pathname'], {cwd: example});
+    proc = spawn('node', ['example.js', '--vhosts:match=pathname', '--web:server:port=9090'], {cwd: example});
     process.on('exit', function () {
       proc.kill();
     });
     proc.stdout.on('data', function (data) {
-      assert.equal(data.toString(), 'Listening on 0.0.0.0:3000\n');
+      assert.equal(data.toString(), 'Listening on 0.0.0.0:' + port + '\n');
       // @todo Not sure why delay needed.
       setTimeout(done, 10);
     });
@@ -18,7 +20,7 @@ describe('basic test', function () {
   });
 
   it('GET / should be a 404', function (done) {
-    request('http://localhost:3000', function (err, res, body) {
+    request(baseUrl + '/', function (err, res, body) {
       assert.ifError(err);
       assert.equal(res.statusCode, 404);
       assert.equal(res.body, 'No matching vhost found');
@@ -27,7 +29,7 @@ describe('basic test', function () {
   });
 
   it('GET /apple should hit the apple vhost', function (done) {
-    request('http://localhost:3000/apple', function (err, res, body) {
+    request(baseUrl + '/apple', function (err, res, body) {
       assert.ifError(err);
       assert.equal(res.statusCode, 200);
       assert.equal(res.body, '<strong><small>Fruit: apple</small></strong>');
@@ -36,7 +38,7 @@ describe('basic test', function () {
   });
 
   it('GET /apple/name.txt should hit the apple vhost', function (done) {
-    request('http://localhost:3000/apple/name.txt', function (err, res, body) {
+    request(baseUrl + '/apple/name.txt', function (err, res, body) {
       assert.ifError(err);
       assert.equal(res.statusCode, 200);
       assert.equal(res.body, 'Fruit');
@@ -45,7 +47,7 @@ describe('basic test', function () {
   });
 
   it('GET /banana should hit the banana vhost', function (done) {
-    request('http://localhost:3000/banana', function (err, res, body) {
+    request(baseUrl + '/banana', function (err, res, body) {
       assert.ifError(err);
       assert.equal(res.statusCode, 200);
       assert.equal(res.body, '<strong>Fruit: banana</strong>');
@@ -54,7 +56,7 @@ describe('basic test', function () {
   });
 
   it('GET /banana/name.txt should hit the banana vhost', function (done) {
-    request('http://localhost:3000/banana/name.txt', function (err, res, body) {
+    request(baseUrl + '/banana/name.txt', function (err, res, body) {
       assert.ifError(err);
       assert.equal(res.statusCode, 200);
       assert.equal(res.body, 'banana');
@@ -63,7 +65,7 @@ describe('basic test', function () {
   });
 
   it('GET /carrot should hit the carrot vhost', function (done) {
-    request('http://localhost:3000/carrot', function (err, res, body) {
+    request(baseUrl + '/carrot', function (err, res, body) {
       assert.ifError(err);
       assert.equal(res.statusCode, 200);
       assert.equal(res.body, '<h1>Veggie: carrot</h1>');
@@ -72,7 +74,7 @@ describe('basic test', function () {
   });
 
   it('GET /carrot/name.txt should hit the carrot vhost', function (done) {
-    request('http://localhost:3000/carrot/name.txt', function (err, res, body) {
+    request(baseUrl + '/carrot/name.txt', function (err, res, body) {
       assert.ifError(err);
       assert.equal(res.statusCode, 200);
       assert.equal(res.body, 'food');
@@ -81,7 +83,7 @@ describe('basic test', function () {
   });
 
   it('GET /common should hit the common vhost', function (done) {
-    request('http://localhost:3000/apple/common', function (err, res, body) {
+    request(baseUrl + '/apple/common', function (err, res, body) {
       assert.ifError(err);
       assert.equal(res.statusCode, 200);
       assert.equal(res.body, 'Common Loaded');
@@ -90,7 +92,7 @@ describe('basic test', function () {
   });
 
   it('GET /common.txt should hit the common vhost', function (done) {
-    request('http://localhost:3000/banana/common.txt', function (err, res, body) {
+    request(baseUrl + '/banana/common.txt', function (err, res, body) {
       assert.ifError(err);
       assert.equal(res.statusCode, 200);
       assert.equal(res.body, 'Loaded');
