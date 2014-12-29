@@ -65,6 +65,9 @@ module.exports = function (app) {
 
     // Load web stuff.
     vhost.load('web', {parent: root});
+
+    // Let the parent app respond to mixin.
+    app.emit('vhosts:mixin', vhost, name, root);
   };
 
   // Create a new vhost.
@@ -116,7 +119,12 @@ module.exports = function (app) {
         });
 
         // Start the vhost.
-        vhost.start(next);
+        app.hook('vhosts:start').runSeries(vhost, function (err) {
+          vhost.start(function (err) {
+            if (err) return next(err);
+            app.hook('vhosts:started').runSeries(vhost, next);
+          });
+        });
       });
     });
 
