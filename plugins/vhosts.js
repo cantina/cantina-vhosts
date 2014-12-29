@@ -23,6 +23,9 @@ module.exports = function (app) {
   }
   inherits(Vhost, Cantina);
 
+  // Expose Vhost class to outside world.
+  app.Vhost = Vhost;
+
   // Custom boot method.
   Vhost.prototype.boot = function (root, cb) {
     var vhost = this;
